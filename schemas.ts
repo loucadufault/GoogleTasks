@@ -56,7 +56,7 @@ export const taskSchema = coda.makeObjectSchema({
   properties: {
     id: { type: coda.ValueType.String },
     updated: dateSchema,
-    selfLink: UrlSchema,
+    // selfLink: UrlSchema,
     completed: dateSchema,
     hidden: { type: coda.ValueType.Boolean },
     // stage 3
@@ -69,8 +69,8 @@ export const taskSchema = coda.makeObjectSchema({
     due: dateSchema,
     deleted: { type: coda.ValueType.Boolean },
     links: { type: coda.ValueType.Array, items: linkSchema }
-  }
-
+  },
+  primary: "title"
 });
 
 export const tasklistSchema = coda.makeObjectSchema({
@@ -78,6 +78,8 @@ export const tasklistSchema = coda.makeObjectSchema({
   properties: {
     id: { type: coda.ValueType.String },
     title: { type: coda.ValueType.String },
-    updated: dateSchema
-  }
+    updated: dateSchema,
+    // selfLink: UrlSchema,
+  },
+  primary: "title"
 });
