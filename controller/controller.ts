@@ -4,7 +4,7 @@ import { listTasklists, getTasklist } from "../service/tasklists.service";
 import { listTasks, getTask, insertTask, patchTask, deleteTask as deleteTaskService } from "../service/tasks.service";
 
 
-const tasklists = async function(context: coda.ExecutionContext) {
+async function tasklists(context: coda.ExecutionContext) {
   try {
     const response = await listTasklists()(context.fetcher);
     return response.body;
@@ -23,7 +23,7 @@ const tasklists = async function(context: coda.ExecutionContext) {
   }
 }
 
-const tasklist = async function([tasklist]: [tasklist: string], context: coda.ExecutionContext) {
+async function tasklist([tasklist]: [tasklist: string], context: coda.ExecutionContext) {
   try {
     const response = await getTasklist({ tasklist })(context.fetcher);
     return response.body;
@@ -42,8 +42,8 @@ const tasklist = async function([tasklist]: [tasklist: string], context: coda.Ex
   }
 }
 
-const tasks = async function(
-  [ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden ]: [ tasklist: string, dueMin: Date, dueMax: Date, completedMin: Date, completedMax: Date, updatedMin: Date, showCompleted: boolean, showDeleted: boolean, showHidden: boolean ], 
+async function tasks(
+  [tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden]: [tasklist: string, dueMin: Date, dueMax: Date, completedMin: Date, completedMax: Date, updatedMin: Date, showCompleted: boolean, showDeleted: boolean, showHidden: boolean], 
   context: coda.ExecutionContext) {
   try {
     const response = await listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden })(context.fetcher);
@@ -63,7 +63,7 @@ const tasks = async function(
   }
 }
 
-const task = async function([task, tasklist]: [task: string, tasklist: string], context: coda.ExecutionContext) {
+async function task([task, tasklist]: [task: string, tasklist: string], context: coda.ExecutionContext) {
   try {
     const response = await getTask({ task, tasklist })(context.fetcher);
     return response.body.resource;
@@ -82,7 +82,7 @@ const task = async function([task, tasklist]: [task: string, tasklist: string], 
   }
 }
 
-const createTask = async function([title, notes, status, due, tasklist]: [title: string, notes: string, status: string, due: Date, tasklist: string], context: coda.ExecutionContext) {
+async function createTask([title, notes, status, due, tasklist]: [title: string, notes: string, status: string, due: Date, tasklist: string], context: coda.ExecutionContext) {
   try {
     const response = await insertTask({ tasklist, taskResource: { title, notes, status, due } })(context.fetcher);
     return response.body.resource.id;
@@ -102,7 +102,7 @@ const createTask = async function([title, notes, status, due, tasklist]: [title:
 }
 
 // can the task list itself be updated here? newTaskList? explore api
-const updateTask = async function([task, title, notes, status, due, tasklist]: [task: string, title: string, notes: string, status: string, due: Date, tasklist: string], context: coda.ExecutionContext) {
+async function updateTask([task, title, notes, status, due, tasklist]: [task: string, title: string, notes: string, status: string, due: Date, tasklist: string], context: coda.ExecutionContext) {
   try {
     const response = await patchTask({ task, tasklist, taskResource: { title, notes, status, due } })(context.fetcher);
     return response.body.resource.id;
@@ -121,7 +121,7 @@ const updateTask = async function([task, title, notes, status, due, tasklist]: [
   }
 }
 
-const deleteTask = async function([task, tasklist]: [task: string, tasklist: string], context: coda.ExecutionContext) {
+async function deleteTask([task, tasklist]: [task: string, tasklist: string], context: coda.ExecutionContext) {
   try {
     await deleteTaskService({ tasklist, task })(context.fetcher);
     return;
