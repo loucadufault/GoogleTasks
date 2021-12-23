@@ -5,9 +5,23 @@ import { Task } from "../types";
 
 function listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden }: { tasklist: string, dueMin: Date, dueMax: Date, completedMin: Date, completedMax: Date, updatedMin: Date, showCompleted: boolean, showDeleted: boolean, showHidden: boolean }) {
   return async function(fetcher: coda.Fetcher) {
+    const url = coda.withQueryParams(
+      `${BASE_URL}/lists/${tasklist}/tasks`, 
+      JSON.parse(JSON.stringify({ // stringify dates to ISO strings and filter out undefined props
+        dueMin,
+        dueMax,
+        completedMin,
+        completedMax,
+        updatedMin,
+        showCompleted,
+        showDeleted,
+        showHidden
+      }))
+      );
+
     return await fetcher.fetch({
       method: "GET",
-      url: `${BASE_URL}/lists/${tasklist}/tasks`
+      url,
     });
   }
 }
