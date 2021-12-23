@@ -7,7 +7,8 @@ import { listTasks, getTask, insertTask, patchTask, deleteTask as deleteTaskServ
 async function tasklists(context: coda.ExecutionContext) {
   try {
     const response = await listTasklists()(context.fetcher);
-    return response.body;
+    // throw new coda.UserVisibleError(JSON.stringify(response));
+    return response.body.items;
   } catch (error) {
     console.log(error);
     if (error.statusCode) {
@@ -63,7 +64,7 @@ async function tasks(
   }
 }
 
-async function task([task, tasklist]: [task: string, tasklist: string], context: coda.ExecutionContext) {
+async function task([tasklist, task]: [tasklist: string, task: string], context: coda.ExecutionContext) {
   try {
     const response = await getTask({ task, tasklist })(context.fetcher);
     return response.body.resource;
@@ -82,7 +83,7 @@ async function task([task, tasklist]: [task: string, tasklist: string], context:
   }
 }
 
-async function createTask([title, notes, status, due, tasklist]: [title: string, notes: string, status: string, due: Date, tasklist: string], context: coda.ExecutionContext) {
+async function createTask([tasklist, title, notes, status, due]: [tasklist: string, title: string, notes: string, status: string, due: Date], context: coda.ExecutionContext) {
   try {
     const response = await insertTask({ tasklist, taskResource: { title, notes, status, due } })(context.fetcher);
     return response.body.resource.id;
@@ -102,7 +103,7 @@ async function createTask([title, notes, status, due, tasklist]: [title: string,
 }
 
 // can the task list itself be updated here? newTaskList? explore api
-async function updateTask([task, title, notes, status, due, tasklist]: [task: string, title: string, notes: string, status: string, due: Date, tasklist: string], context: coda.ExecutionContext) {
+async function updateTask([tasklist, task, title, notes, status, due]: [tasklist: string, task: string, title: string, notes: string, status: string, due: Date], context: coda.ExecutionContext) {
   try {
     const response = await patchTask({ task, tasklist, taskResource: { title, notes, status, due } })(context.fetcher);
     return response.body.resource.id;
@@ -121,7 +122,7 @@ async function updateTask([task, title, notes, status, due, tasklist]: [task: st
   }
 }
 
-async function deleteTask([task, tasklist]: [task: string, tasklist: string], context: coda.ExecutionContext) {
+async function deleteTask([tasklist, task]: [tasklist: string, task: string], context: coda.ExecutionContext) {
   try {
     await deleteTaskService({ tasklist, task })(context.fetcher);
     return;

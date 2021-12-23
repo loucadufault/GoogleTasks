@@ -14,7 +14,8 @@ pack.setUserAuthentication({
   authorizationUrl: "https://accounts.google.com/o/oauth2/v2/auth", // see https://developers.google.com/identity/protocols/oauth2/web-server#creatingclient
   tokenUrl: "https://oauth2.googleapis.com/token", // see https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code
   scopes: [
-
+    "https://www.googleapis.com/auth/tasks",
+    "https://www.googleapis.com/auth/tasks.readonly"
   ]
 });
 
@@ -26,8 +27,7 @@ const tasklistParam = coda.makeParameter({
   type: coda.ParameterType.String,
   name: "tasklist",
   description: "The URL, ID, or name of a task list to use.",
-  optional: true,
-  defaultValue: "primary"
+  autocomplete: ["My Tasks"]
 });
 
 const taskParam = coda.makeParameter({
@@ -111,21 +111,21 @@ pack.addFormula({
       name: "showCompleted",
       description: "Flag indicating whether completed tasks are returned in the result. The default is True. Note that `showHidden` must also be True to show tasks completed in first party clients, such as the web UI and Google's mobile apps.",
       optional: true,
-      defaultValue: true,
+      // defaultValue: true,
     }),
     coda.makeParameter({
       type: coda.ParameterType.Boolean,
       name: "showDeleted",
       description: "Flag indicating whether deleted tasks are returned in the result. The default is False.",
       optional: true,
-      defaultValue: false,
+      // defaultValue: false,
     }),
     coda.makeParameter({
       type: coda.ParameterType.Boolean,
       name: "showHidden",
       description: "Flag indicating whether hidden tasks are returned in the result. The default is False.",
       optional: true,
-      defaultValue: false,
+      // defaultValue: false,
     }),
   ],
 
@@ -142,15 +142,15 @@ pack.addFormula({
   description: "Returns the specified task.",
 
   parameters: [
+    tasklistParam,
     taskParam,
-    tasklistParam
   ],
 
   resultType: coda.ValueType.Object,
   schema: taskSchema,
 
-  execute: async function ([pTask, taskList = "primary"], context) {
-    return task([pTask, taskList], context);
+  execute: async function ([taskList = "primary", pTask], context) {
+    return task([taskList, pTask], context);
   }
 });
 
@@ -162,6 +162,7 @@ pack.addFormula({
   isAction: true,
 
   parameters: [
+    tasklistParam,
     coda.makeParameter({
       type: coda.ParameterType.String,
       name: "title",
@@ -187,7 +188,6 @@ pack.addFormula({
       description: "Due date of the task. The due date only records date information; the time portion of the timestamp is discarded when setting the due date.",
       optional: true,
     }),
-    tasklistParam,
     // completed and deleted params?
   ],
   // these seem to be read-only
@@ -212,8 +212,8 @@ pack.addFormula({
 
   resultType: coda.ValueType.String,
 
-  execute: async function ([title, notes, status, due, taskList = "primary"], context) {
-    return createTask([title, notes, status, due, taskList], context);
+  execute: async function ([taskList = "primary", title, notes, status, due], context) {
+    return createTask([taskList, title, notes, status, due], context);
   },
 });
 
@@ -225,6 +225,7 @@ pack.addFormula({
   isAction: true,
 
   parameters: [
+    tasklistParam,
     taskParam,
     coda.makeParameter({
       type: coda.ParameterType.String,
@@ -251,7 +252,6 @@ pack.addFormula({
       description: "Due date of the task. The due date only records date information; the time portion of the timestamp is discarded when setting the due date.",
       optional: true,
     }),
-    tasklistParam,
     // completed and deleted params?
   ],
   // these seem to be read-only
@@ -276,8 +276,8 @@ pack.addFormula({
 
   resultType: coda.ValueType.String,
 
-  execute: async function ([task, title, notes, status, due, tasklist = "primary"], context) {
-    return updateTask([task, title, notes, status, due, tasklist], context);
+  execute: async function ([tasklist = "primary", task, title, notes, status, due], context) {
+    return updateTask([tasklist, task, title, notes, status, due], context);
   },
 });
 
@@ -289,14 +289,14 @@ pack.addFormula({
   isAction: true,
 
   parameters: [
-    taskParam,
     tasklistParam,
+    taskParam
   ],
 
   resultType: coda.ValueType.String,
 
-  execute: async function ([task, tasklist = "primary"], context) {
-    deleteTask([task, tasklist], context);
+  execute: async function ([tasklist = "primary", task], context) {
+    deleteTask([tasklist, task], context);
     return "OK";
   },
 });
