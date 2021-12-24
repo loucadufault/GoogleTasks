@@ -1,22 +1,22 @@
 {
-  "name": "coda-pack-google-calendar-notifications",
+  "name": "coda-pack-google-tasks",
   "version": "1.0.0",
-  "description": "A Coda pack to set and check notifications of Google Calendar events.",
-  "main": "index.js",
+  "description": "A Coda pack to manage Google tasks and task lists.",
+  "main": "pack.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "upload": "coda upload pack.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/loucadufault/GoogleCalendarNotifications.git"
+    "url": "git+https://github.com/loucadufault/GoogleTasks.git"
   },
   "author": "Louca Dufault",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/loucadufault/GoogleCalendarNotifications/issues"
+    "url": "https://github.com/loucadufault/GoogleTasks/issues"
   },
-  "homepage": "https://github.com/loucadufault/GoogleCalendarNotifications#readme",
+  "homepage": "https://github.com/loucadufault/GoogleTasks#readme",
   "dependencies": {
     "@codahq/packs-sdk": "^0.7.3"
   },

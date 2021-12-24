@@ -2,16 +2,17 @@ import * as coda from "@codahq/packs-sdk";
 
 import { makePropertiesOptional } from "./utils/schema.helpers";
 
+
 const dateSchema = coda.makeSchema({ type: coda.ValueType.String, codaType: coda.ValueHintType.DateTime });
 
-const UrlSchema = coda.makeSchema({ type: coda.ValueType.String, codaType: coda.ValueHintType.Url });
+const urlSchema = coda.makeSchema({ type: coda.ValueType.String, codaType: coda.ValueHintType.Url });
 
 const linkSchema = coda.makeObjectSchema({
   type: coda.ValueType.Object,
   properties: {
     type: { type: coda.ValueType.String },
     description: { type: coda.ValueType.String },
-    link: UrlSchema
+    link: urlSchema
   }
 });
 
