@@ -1,11 +1,17 @@
 import * as coda from "@codahq/packs-sdk";
 
-import { BASE_URL } from "../utils/constants.helpers";
+import { BASE_URL } from "../utils/api.constants";
 import { Task } from "../types";
+import { pager } from "../pager";
+import { MAX_ALLOWED_MAX_RESULTS } from "../utils/pagination.constants";
+
+
+const MAX_RESULTS = MAX_ALLOWED_MAX_RESULTS;
+
 
 function listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden }: { tasklist: string, dueMin: Date, dueMax: Date, completedMin: Date, completedMax: Date, updatedMin: Date, showCompleted: boolean, showDeleted: boolean, showHidden: boolean }) {
   return async function(fetcher: coda.Fetcher) {
-    const url = coda.withQueryParams(
+    let url = coda.withQueryParams(
       `${BASE_URL}/lists/${tasklist}/tasks`, 
       JSON.parse(JSON.stringify({ // stringify dates to ISO strings and filter out undefined props
         dueMin,
@@ -17,12 +23,23 @@ function listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updat
         showDeleted,
         showHidden
       }))
-      );
+    );
 
-    return await fetcher.fetch({
+    url = coda.withQueryParams(url, { maxResults: MAX_RESULTS });
+    
+    const initialResponse = await fetcher.fetch({
       method: "GET",
       url,
     });
+
+    return pager(initialResponse, (pageToken) => {
+      const nextPageUrl = coda.withQueryParams(url, { pageToken });
+
+      return fetcher.fetch({
+        method: "GET",
+        url: nextPageUrl,
+      });
+    }); // initial page
   }
 }
 
@@ -63,6 +80,7 @@ function deleteTask({ tasklist, task }: { tasklist: string, task: string }) {
     });
   }
 }
+
 
 export {
   listTasks,

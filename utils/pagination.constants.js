@@ -1,0 +1,1 @@
+export const MAX_ALLOWED_MAX_RESULTS = 100;

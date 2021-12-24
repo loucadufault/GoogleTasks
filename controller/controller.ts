@@ -4,11 +4,26 @@ import { listTasklists, getTasklist } from "../service/tasklists.service";
 import { listTasks, getTask, insertTask, patchTask, deleteTask as deleteTaskService } from "../service/tasks.service";
 
 
+const MAX_PAGES = 5; // should be connected to coda rate limiting or pull from some rate limiting constants
+
+
 async function tasklists(context: coda.ExecutionContext) {
   try {
-    const response = await listTasklists()(context.fetcher);
-    // throw new coda.UserVisibleError(JSON.stringify(response));
-    return response.body.items;
+    const items = [];
+    let page = await listTasklists()(context.fetcher);
+    let num_requests = 1;
+
+    do {
+      items.push(...page.response.body.items);
+
+      if (!page.hasNextPage()) { break; }
+
+      page = await page.fetchNextPage();
+
+      num_requests++;
+    } while (num_requests < MAX_PAGES);
+
+    return items;
   } catch (error) {
     console.log(error);
     if (error.statusCode) {
@@ -47,8 +62,21 @@ async function tasks(
   [tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden]: [tasklist: string, dueMin: Date, dueMax: Date, completedMin: Date, completedMax: Date, updatedMin: Date, showCompleted: boolean, showDeleted: boolean, showHidden: boolean], 
   context: coda.ExecutionContext) {
   try {
-    const response = await listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden })(context.fetcher);
-    return response.body.resource.items;
+    const items = [];
+    let page = await listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden })(context.fetcher);
+    let num_requests = 1;
+
+    do {
+      items.push(...page.response.body.items);
+
+      if (!page.hasNextPage()) { break; }
+
+      page = await page.fetchNextPage();
+
+      num_requests++;
+    } while (num_requests < MAX_PAGES);
+
+    return items;
   } catch (error) {
     console.log(error);
     if (error.statusCode) {

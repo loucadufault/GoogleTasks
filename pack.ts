@@ -2,7 +2,7 @@ import * as coda from "@codahq/packs-sdk";
 
 import { tasklists, tasklist, tasks, task, createTask, updateTask, deleteTask } from "./controller/controller";
 import { tasklistSchema, taskSchema } from "./schemas";
-import { GOOGLEAPIS_DOMAIN } from "./utils/constants.helpers";
+import { GOOGLEAPIS_DOMAIN } from "./utils/api.constants";
 
 
 export const pack = coda.newPack();
