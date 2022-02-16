@@ -2,7 +2,7 @@ import * as coda from "@codahq/packs-sdk";
 
 import { tasklists, tasklist, tasks, task, createTask, updateTask, deleteTask } from "./controller/controller";
 import { tasklistSchema, taskSchema } from "./schemas";
-import { GOOGLEAPIS_DOMAIN } from "./utils/api.constants";
+import { GOOGLEAPIS_DOMAIN, CACHE_TTL } from "./utils/api.constants";
 
 
 export const pack = coda.newPack();
@@ -41,6 +41,7 @@ const taskParam = coda.makeParameter({
 pack.addFormula({
   name: "Tasklists",
   description: "Returns all task lists.",
+  cacheTtlSecs: CACHE_TTL,
 
   parameters: [],
 
@@ -56,6 +57,7 @@ pack.addFormula({
 pack.addFormula({
   name: "Tasklist",
   description: "Returns a specific task list.",
+  cacheTtlSecs: CACHE_TTL,
 
   parameters: [
     tasklistParam
@@ -73,6 +75,7 @@ pack.addFormula({
 pack.addFormula({
   name: "Tasks",
   description: "Returns all tasks in the specified task list.",
+  cacheTtlSecs: CACHE_TTL,
 
   parameters: [
     tasklistParam,
@@ -140,6 +143,7 @@ pack.addFormula({
 pack.addFormula({
   name: "Task",
   description: "Returns the specified task.",
+  cacheTtlSecs: CACHE_TTL,
 
   parameters: [
     tasklistParam,

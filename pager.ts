@@ -4,15 +4,16 @@ import * as coda from "@codahq/packs-sdk";
 type FetchCallback = (pageToken: string) => Promise<coda.FetchResponse>;
 
 
-function extractNextPageToken(response: coda.FetchResponse) {
-  return response.body.nextPageToken as string;
+// should be an externally provided dependency of this module
+function extractNextPageToken(response: coda.FetchResponse): string | undefined {
+  return response.body.nextPageToken;
 }
 
 
 export function pager(initialResponse: coda.FetchResponse, fetchPage: FetchCallback) {
   class Page {
     public response: coda.FetchResponse;
-    private nextPageToken: string;
+    private nextPageToken: string | undefined;
 
     constructor(response: coda.FetchResponse) {
       this.response = response;
@@ -20,7 +21,7 @@ export function pager(initialResponse: coda.FetchResponse, fetchPage: FetchCallb
     }
 
     hasNextPage() {
-      return this.nextPageToken !== "";
+      return this.nextPageToken !== undefined && this.nextPageToken !== "";
     }
 
     async fetchNextPage() {

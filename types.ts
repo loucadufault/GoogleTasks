@@ -12,3 +12,9 @@ export type Task = {
   deleted?: boolean,
   links?: Link[],
 }
+
+export type Tasklist = {
+  id: string,
+  title: string,
+  updated: string,
+}
