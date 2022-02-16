@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/loucadufault/GoogleTasks#readme",
   "dependencies": {
-    "@codahq/packs-sdk": "^0.7.3"
+    "@codahq/packs-sdk": "^0.7.3",
+    "dotenv": "^16.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",

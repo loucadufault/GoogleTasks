@@ -1,44 +1,13 @@
 import * as coda from "@codahq/packs-sdk";
 
 import { BASE_URL } from "../utils/api.constants";
-import { Task, Tasklist } from "../types";
+import { Task } from "../types";
 import { pager } from "../pager";
 import { MAX_ALLOWED_MAX_RESULTS } from "../utils/pagination.constants";
-import { mayBeValidResourceIdentifier } from "../utils/api.helpers";
-import { listTasklists } from "./tasklists.service";
+import { fetchRequestAsIdentifierOrFallbackAsTitle } from "../utils/service.helpers";
 
 
 const MAX_RESULTS = MAX_ALLOWED_MAX_RESULTS;
-
-
-async function fetchRequestAsIdentifierOrFallbackAsTitle(fetcher: coda.Fetcher, tasklistIdentifier: string, buildFetchRequest: (tasklistIdentifier: string) => coda.FetchRequest) {
-  let wasValidIdentifier = false;
-  let response: coda.FetchResponse;
-  let usedTasklistIdentifier: string;
-
-  if (mayBeValidResourceIdentifier(tasklistIdentifier)) {
-    usedTasklistIdentifier = tasklistIdentifier;
-
-    response = await fetcher.fetch(buildFetchRequest(tasklistIdentifier));
-
-    wasValidIdentifier = response.status !== 400; // unwise
-  }
-
-  if (!wasValidIdentifier) { // treat it as a title
-    const tasklists = (await listTasklists()(fetcher)); // TODO: hack, let's assume for now that the taskslist fit on the first page
-    
-    const tasklistWithTitle = (tasklists.response.body.items as Tasklist[]).find((item: Tasklist) => item.title === tasklistIdentifier);
-    
-    usedTasklistIdentifier = tasklistWithTitle.id;
-
-    response = await fetcher.fetch(buildFetchRequest(tasklistWithTitle.id));
-  }
-
-  return {
-    tasklistIdentifier: usedTasklistIdentifier,
-    response
-  };
-} 
 
 
 function listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden }: { tasklist: string, dueMin: Date, dueMax: Date, completedMin: Date, completedMax: Date, updatedMin: Date, showCompleted: boolean, showDeleted: boolean, showHidden: boolean }) {

@@ -3,6 +3,7 @@ import { pager } from "../pager";
 
 import { BASE_URL } from "../utils/api.constants";
 import { MAX_ALLOWED_MAX_RESULTS } from "../utils/pagination.constants";
+import { fetchRequestAsIdentifierOrFallbackAsTitle } from "../utils/service.helpers";
 
 
 const MAX_RESULTS = MAX_ALLOWED_MAX_RESULTS;
@@ -30,10 +31,12 @@ function listTasklists() {
 
 function getTasklist({ tasklist }: { tasklist: string }) {
   return async function(fetcher: coda.Fetcher) {
-    return await fetcher.fetch({
+    const { response } = await fetchRequestAsIdentifierOrFallbackAsTitle(fetcher, tasklist, (tasklistIdentifier) => ({
       method: "GET",
-      url: `${BASE_URL}/users/@me/lists/${tasklist}`
-    });
+      url: `${BASE_URL}/users/@me/lists/${tasklistIdentifier}`
+    }));
+
+    return response;
   }
 }
 

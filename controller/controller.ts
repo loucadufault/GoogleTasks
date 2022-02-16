@@ -95,7 +95,7 @@ async function tasks(
 async function task([tasklist, task]: [tasklist: string, task: string], context: coda.ExecutionContext) {
   try {
     const response = await getTask({ task, tasklist })(context.fetcher);
-    return response.body.resource;
+    return response.body; //.resource; API defect? see https://issuetracker.google.com/issues/219992957 
   } catch (error) {
     console.log(error);
     if (error.statusCode) {

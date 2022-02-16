@@ -1,5 +1,7 @@
 import * as coda from "@codahq/packs-sdk";
 
+import 'dotenv/config';
+
 import { tasklists, tasklist, tasks, task, createTask, updateTask, deleteTask } from "./controller/controller";
 import { tasklistSchema, taskSchema } from "./schemas";
 import { GOOGLEAPIS_DOMAIN, CACHE_TTL } from "./utils/api.constants";
