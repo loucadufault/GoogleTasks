@@ -19,7 +19,11 @@ pack.setUserAuthentication({
   scopes: [
     "https://www.googleapis.com/auth/tasks",
     "https://www.googleapis.com/auth/tasks.readonly"
-  ]
+  ],
+  additionalParams: {
+    access_type: "offline",
+    prompt: "consent",
+  },
 });
 
 
