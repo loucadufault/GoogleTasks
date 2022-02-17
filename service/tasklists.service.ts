@@ -1,5 +1,5 @@
 import * as coda from "@codahq/packs-sdk";
-import { pager } from "../pager";
+import { paginator } from "../pagination";
 
 import { BASE_URL } from "../utils/api.constants";
 import { MAX_ALLOWED_MAX_RESULTS } from "../utils/pagination.constants";
@@ -18,7 +18,7 @@ function listTasklists() {
       url,
     });
 
-    return pager(initialResponse, (pageToken) => {
+    return paginator(initialResponse, (pageToken) => {
       const nextPageUrl = coda.withQueryParams(url, { pageToken });
 
       return fetcher.fetch({

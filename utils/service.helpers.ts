@@ -5,9 +5,9 @@ import { Tasklist } from "../types";
 import { mayBeValidResourceIdentifier } from "./api.helpers";
 
 /**
- * Use a strategy to make the fetch requests built using the given (tentative) tasklist identifier. This strategy aims to support providing a valid tasklist identifier or the title of a tasklist as the formula "tasklist" param.
+ * Use a strategy to perform the fetch requests built using the given (tentative) tasklist identifier. This strategy aims to support the supplied "tasklist" being a valid tasklist identifier or the title of a tasklist.
  * 
- * All fetch operations use the given fetcher object and rely on the buildFetchRequest callback to supply a valid FetchRequest object from a supplied tasklist identifier.  
+ * All fetch operations use the given fetcher object and rely on the buildFetchRequest callback to yield a valid FetchRequest object from a supplied tasklist identifier.  
  * The function is guaranteed to perform at least one fetch operation and return a response.
  * 
  * Strategy:
@@ -42,9 +42,9 @@ async function fetchRequestAsIdentifierOrFallbackAsTitle(fetcher: coda.Fetcher, 
   }
 
   if (!wasValidIdentifier) { // treat it as a title
-    const tasklists = (await listTasklists()(fetcher)); // TODO: hack, let's assume for now that the taskslist fit on the first page
+    const tasklists = await listTasklists()(fetcher); // TODO: hack, let's assume for now that the taskslist fit on the first page
     
-    const tasklistWithTitle = (tasklists.response.body.items as Tasklist[]).find((item: Tasklist) => item.title === tasklistIdentifier);
+    const tasklistWithTitle = (tasklists.getCurrentPage().response.body.items as Tasklist[]).find((item: Tasklist) => item.title === tasklistIdentifier);
     
     if (tasklistWithTitle !== undefined) {
       usedTasklistIdentifier = tasklistWithTitle.id;

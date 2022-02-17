@@ -10,15 +10,15 @@ const MAX_PAGES = 5; // should be connected to coda rate limiting or pull from s
 async function tasklists(context: coda.ExecutionContext) {
   try {
     const items = [];
-    let page = await listTasklists()(context.fetcher);
+    const pager = await listTasklists()(context.fetcher);
     let num_requests = 1;
 
     do {
-      items.push(...page.response.body.items);
+      items.push(...pager.getCurrentPage().response.body.items);
 
-      if (!page.hasNextPage()) { break; }
+      if (!pager.hasNextPage()) { break; }
 
-      page = await page.fetchNextPage();
+      await pager.nextPage();
 
       num_requests++;
     } while (num_requests < MAX_PAGES);
@@ -63,15 +63,15 @@ async function tasks(
   context: coda.ExecutionContext) {
   try {
     const items = [];
-    let page = await listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden })(context.fetcher);
+    const pager = await listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden })(context.fetcher);
     let num_requests = 1;
 
     do {
-      items.push(...page.response.body.items);
+      items.push(...pager.getCurrentPage().response.body.items);
 
-      if (!page.hasNextPage()) { break; }
+      if (!pager.hasNextPage()) { break; }
 
-      page = await page.fetchNextPage();
+      await pager.nextPage();
 
       num_requests++;
     } while (num_requests < MAX_PAGES);
