@@ -33,7 +33,7 @@ pack.addNetworkDomain(GOOGLEAPIS_DOMAIN);
 const tasklistParam = coda.makeParameter({
   type: coda.ParameterType.String,
   name: "tasklist",
-  description: "The URL, ID, or name of a task list to use.",
+  description: "The URL, ID, or title of a task list to use.",
   autocomplete: ["My Tasks"]
 });
 
