@@ -1,4 +1,5 @@
 import * as coda from "@codahq/packs-sdk";
+import { TaskListRESTResource, TaskListsResponse } from "../api_response.types";
 import { paginator } from "../pagination";
 
 import { BASE_URL } from "../utils/api.constants";
@@ -18,7 +19,7 @@ function listTasklists() {
       url,
     });
 
-    return paginator(initialResponse, (pageToken) => {
+    return paginator<TaskListsResponse>(initialResponse, (pageToken) => {
       const nextPageUrl = coda.withQueryParams(url, { pageToken });
 
       return fetcher.fetch({
@@ -36,7 +37,7 @@ function getTasklist({ tasklist }: { tasklist: string }) {
       url: `${BASE_URL}/users/@me/lists/${tasklistIdentifier}`
     }));
 
-    return response;
+    return response as coda.FetchResponse<TaskListRESTResource>;
   }
 }
 

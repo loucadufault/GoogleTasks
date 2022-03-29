@@ -1,4 +1,5 @@
 import * as coda from "@codahq/packs-sdk";
+import { TaskListRESTResource, TaskRESTResource } from "../api_response.types";
 
 import { listTasklists, getTasklist } from "../service/tasklists.service";
 import { listTasks, getTask, insertTask, patchTask, deleteTask as deleteTaskService } from "../service/tasks.service";
@@ -9,7 +10,7 @@ const MAX_PAGES = 5; // should be connected to coda rate limiting or pull from s
 
 async function tasklists(context: coda.ExecutionContext) {
   try {
-    const items = [];
+    const items: TaskListRESTResource[] = [];
     const pager = await listTasklists()(context.fetcher);
     let num_requests = 1;
 
@@ -62,12 +63,18 @@ async function tasks(
   [tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden]: [tasklist: string, dueMin: Date, dueMax: Date, completedMin: Date, completedMax: Date, updatedMin: Date, showCompleted: boolean, showDeleted: boolean, showHidden: boolean], 
   context: coda.ExecutionContext) {
   try {
-    const items = [];
+    const items: TaskRESTResource[] = [];
     const pager = await listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden })(context.fetcher);
     let num_requests = 1;
 
     do {
-      items.push(...pager.getCurrentPage().response.body.items);
+      // see https://issuetracker.google.com/issues/227221663
+      // not sure what the behaviour is for when this prop is or isn't present
+      // for now let's be safe and not make any assumptions, check everytime before accessing the prop that is is present, regardless of page number
+      // we do assume that if the items property is present, then it is a list of Task objects (and not some nonsense value)
+      if (pager.getCurrentPage().response.body.hasOwnProperty("items")) {
+        items.push(...pager.getCurrentPage().response.body.items);
+      }
 
       if (!pager.hasNextPage()) { break; }
 
@@ -95,7 +102,7 @@ async function tasks(
 async function task([tasklist, task]: [tasklist: string, task: string], context: coda.ExecutionContext) {
   try {
     const response = await getTask({ task, tasklist })(context.fetcher);
-    return response.body; //.resource; API defect? see https://issuetracker.google.com/issues/219992957 
+    return response.body as TaskRESTResource; //.resource; API defect? see https://issuetracker.google.com/issues/219992957 
   } catch (error) {
     console.log(error);
     if (error.statusCode) {
@@ -114,7 +121,7 @@ async function task([tasklist, task]: [tasklist: string, task: string], context:
 async function createTask([tasklist, title, notes, status, due]: [tasklist: string, title: string, notes: string, status: string, due: Date], context: coda.ExecutionContext) {
   try {
     const response = await insertTask({ tasklist, taskResource: { title, notes, status, due } })(context.fetcher);
-    return response.body.resource.id;
+    return response.body.id as string; //.resource; API defect? see https://issuetracker.google.com/issues/219992957 
   } catch (error) {
     console.log(error);
     if (error.statusCode) {
@@ -134,7 +141,7 @@ async function createTask([tasklist, title, notes, status, due]: [tasklist: stri
 async function updateTask([tasklist, task, title, notes, status, due]: [tasklist: string, task: string, title: string, notes: string, status: string, due: Date], context: coda.ExecutionContext) {
   try {
     const response = await patchTask({ task, tasklist, taskResource: { title, notes, status, due } })(context.fetcher);
-    return response.body.resource.id;
+    return response.body.id as string; //.resource; API defect? see https://issuetracker.google.com/issues/219992957 
   } catch (error) {
     console.log(error);
     if (error.statusCode) {

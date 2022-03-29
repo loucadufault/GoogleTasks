@@ -5,6 +5,7 @@ import { Task } from "../types";
 import { paginator } from "../pagination";
 import { MAX_ALLOWED_MAX_RESULTS } from "../utils/pagination.constants";
 import { fetchRequestAsIdentifierOrFallbackAsTitle } from "../utils/service.helpers";
+import { EmptyResponse, TaskRESTResource, TasksResponse } from "../api_response.types";
 
 
 const MAX_RESULTS = MAX_ALLOWED_MAX_RESULTS;
@@ -32,7 +33,7 @@ function listTasks({ tasklist, dueMin, dueMax, completedMin, completedMax, updat
       url: buildUrl(tasklistIdentifier), 
     }));
 
-    return paginator(initialResponse, (pageToken) => {
+    return paginator<TasksResponse>(initialResponse, (pageToken) => {
       const nextPageUrl = coda.withQueryParams(buildUrl(tasklistIdentifier), { pageToken });
 
       return fetcher.fetch({
@@ -50,7 +51,7 @@ function getTask({ tasklist, task }: { tasklist: string, task: string }) {
       url: `${BASE_URL}/lists/${tasklistIdentifier}/tasks/${task}`, 
     }));
 
-    return response;
+    return response as coda.FetchResponse<TaskRESTResource>;
   }
 }
 
@@ -62,7 +63,7 @@ function insertTask({ tasklist, taskResource }: {tasklist: string, taskResource:
       body: JSON.stringify(taskResource),
     }));
 
-    return response;
+    return response as coda.FetchResponse<TaskRESTResource>;
   }
 }
 
@@ -74,7 +75,7 @@ function patchTask({ tasklist, task, taskResource }: {tasklist: string, task: st
       body: JSON.stringify(taskResource),
     }));
 
-    return response;
+    return response as coda.FetchResponse<TaskRESTResource>;
   }
 }
 
@@ -85,7 +86,7 @@ function deleteTask({ tasklist, task }: { tasklist: string, task: string }) {
       url: `${BASE_URL}/lists/${tasklistIdentifier}/tasks/${task}`
     }));
 
-    return response;
+    return response as coda.FetchResponse<EmptyResponse>;
   }
 }
 
