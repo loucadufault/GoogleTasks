@@ -15,7 +15,9 @@ async function tasklists(context: coda.ExecutionContext) {
     let num_requests = 1;
 
     do {
-      items.push(...pager.getCurrentPage().response.body.items);
+      if (pager.getCurrentPage().response.body.items !== undefined) {
+        items.push(...pager.getCurrentPage().response.body.items);
+      }
 
       if (!pager.hasNextPage()) { break; }
 
@@ -72,7 +74,7 @@ async function tasks(
       // not sure what the behaviour is for when this prop is or isn't present
       // for now let's be safe and not make any assumptions, check everytime before accessing the prop that is is present, regardless of page number
       // we do assume that if the items property is present, then it is a list of Task objects (and not some nonsense value)
-      if (pager.getCurrentPage().response.body.hasOwnProperty("items")) {
+      if (pager.getCurrentPage().response.body.items !== undefined) {
         items.push(...pager.getCurrentPage().response.body.items);
       }
 
