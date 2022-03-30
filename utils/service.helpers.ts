@@ -34,23 +34,38 @@ async function fetchRequestAsIdentifierOrFallbackAsTitle(fetcher: coda.Fetcher, 
   let usedTasklistIdentifier: string;
 
   if (mayBeValidResourceIdentifier(tasklistIdentifier)) {
+    console.log("may bea  valid identifier, trying as identifier")
     usedTasklistIdentifier = tasklistIdentifier;
 
     response = await fetcher.fetch(buildFetchRequest(tasklistIdentifier));
 
     wasValidIdentifier = response.status !== 400; // unwise
+    console.log("response.status  == 400? " + wasValidIdentifier);
   }
 
   if (!wasValidIdentifier) { // treat it as a title
-    const tasklists = await listTasklists()(fetcher); // TODO: hack, let's assume for now that the taskslist fit on the first page
-    
-    const tasklistWithTitle = (tasklists.getCurrentPage().response.body.items as Tasklist[]).find((item: Tasklist) => item.title === tasklistIdentifier);
-    
+    console.log("was not a valid identifier");
+    console.log("got here 1");
+    let tasklists;
+    try {
+      tasklists = await (listTasklists()(fetcher)); // TODO: hack, let's assume for now that the taskslist fit on the first page
+      console.log("done awaiting");
+    } catch (e) {
+      console.log("error (catched)");
+      console.log(e);
+    }
+    console.log("got here 2 (outside try/catch)");
+    console.log(tasklists.getCurrentPage().response.body);
+    const tasklistWithTitle = tasklists.getCurrentPage().response.body.items?.find((item: Tasklist) => item.title === tasklistIdentifier);
+
     if (tasklistWithTitle !== undefined) {
+      console.log("did find tasklist with identifier as title");
+
       usedTasklistIdentifier = tasklistWithTitle.id;
 
       response = await fetcher.fetch(buildFetchRequest(tasklistWithTitle.id));
     } else if (response === undefined) { // most likely isn't a valid tasklist identifier (and definitely not the title of any tasklist)
+      console.log("didn't find tasklist with identifier as title, and response was still undefined");
       // make the request anyway to return a meaningful error payload
       usedTasklistIdentifier = tasklistIdentifier;
 
