@@ -48,8 +48,12 @@ async function fetchRequestAsIdentifierOrFallbackAsTitle(fetcher: coda.Fetcher, 
     console.log("got here 1");
     let tasklists;
     try {
-      tasklists = await (listTasklists()(fetcher)); // TODO: hack, let's assume for now that the taskslist fit on the first page
-      console.log("done awaiting");
+      const asyncFetchableFunc = listTasklists();
+      console.log("called listTasklists() and got async function");
+      const fetchPromise = asyncFetchableFunc(fetcher);
+      console.log("called async function with fetcher arg and got promise result");
+      tasklists = await fetchPromise;
+      console.log("done awaiting promise");
     } catch (e) {
       console.log("error (catched)");
       console.log(e);

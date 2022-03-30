@@ -13,11 +13,21 @@ const MAX_RESULTS = MAX_ALLOWED_MAX_RESULTS;
 function listTasklists() {
   return async function(fetcher: coda.Fetcher) {
     const url = coda.withQueryParams(`${BASE_URL}/users/@me/lists`, { maxResults: MAX_RESULTS });
-    
-    const initialResponse = await fetcher.fetch({
-      method: "GET",
-      url,
-    });
+    console.log({url});
+
+    console.log("about to fetcher.fetch()");
+    let initialResponse;
+    try {
+      initialResponse = await fetcher.fetch({
+        method: "GET",
+        url,
+      });
+    } catch (e) {
+      console.log("error in async returned func");
+      console.log(e);
+    }
+
+    console.log("got initial response");
 
     return paginator<TaskListsResponse>(initialResponse, (pageToken) => {
       const nextPageUrl = coda.withQueryParams(url, { pageToken });
