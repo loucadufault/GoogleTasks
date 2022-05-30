@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/loucadufault/GoogleTasks#readme",
   "dependencies": {
-    "@codahq/packs-sdk": "^0.7.3",
+    "@codahq/packs-sdk": "^0.12.0",
     "dotenv": "^16.0.0"
   },
   "devDependencies": {

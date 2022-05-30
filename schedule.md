@@ -24,3 +24,8 @@ bonus:
 stage tbd:
 - link mutation
 - due time mutation
+
+
+random todos
+make tasklist an autocomplete param that pulls from api list of tasklists.name
+make object schemas only the input POJOs, not the result of wrapping with coda utility func. that way they can be manipularted still, and then wrapped in utility func right before usage (e.g. adding featured properties)

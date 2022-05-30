@@ -1,7 +1,5 @@
 import * as coda from "@codahq/packs-sdk";
 
-import { makePropertiesOptional } from "./utils/schema.helpers";
-
 
 const dateSchema = coda.makeSchema({ type: coda.ValueType.String, codaType: coda.ValueHintType.DateTime });
 
@@ -15,41 +13,6 @@ const linkSchema = coda.makeObjectSchema({
     link: urlSchema
   }
 });
-
-// const readOnlyTaskProperties = {
-//   id: coda.makeSchema({ type: coda.ValueType.String }),
-//   updated: dateSchema,
-//   selfLink: UrlSchema,
-//   completed: dateSchema,
-//   hidden: coda.makeSchema({ type: coda.ValueType.Boolean }),
-//   // stage 3
-//   // parent: { type: coda.ValueType.String, optional: true },
-//   // position: { type: coda.ValueType.String },
-// };
-
-// const writableTaskProperties = {
-//   title: coda.makeSchema({ type: coda.ValueType.String }),
-//   notes: coda.makeSchema({ type: coda.ValueType.String }),
-//   status: coda.makeSchema({ type: coda.ValueType.String }),
-//   due: dateSchema,
-//   deleted: coda.makeSchema({ type: coda.ValueType.Boolean }),
-//   links: coda.makeSchema({ type: coda.ValueType.Array, items: linkSchema })
-// }
-
-// export const writableTaskSchema = coda.makeObjectSchema({
-//   type: coda.ValueType.Object,
-//   properties: {
-//     ...(makePropertiesOptional(writableTaskProperties))
-//   },
-// });
-
-// export const taskSchema = coda.makeObjectSchema({
-//   type: coda.ValueType.Object,
-//   properties: {
-//     ...readOnlyTaskProperties,
-//     ...writableTaskProperties
-//   },
-// });
 
 const taskSchemaDefinition: coda.ObjectSchemaDefinition<string, string> = {
   type: coda.ValueType.Object,
@@ -70,7 +33,7 @@ const taskSchemaDefinition: coda.ObjectSchemaDefinition<string, string> = {
     deleted: { type: coda.ValueType.Boolean },
     links: { type: coda.ValueType.Array, items: linkSchema }
   },
-  primary: "title" // todo, upgrade sdk and rename to displayProperty
+  displayProperty: "title" // todo, upgrade sdk and rename to displayProperty
 };
 
 export const taskSchema = coda.makeObjectSchema(taskSchemaDefinition);
@@ -78,7 +41,6 @@ export const taskSchema = coda.makeObjectSchema(taskSchemaDefinition);
 export const syncTableTaskSchema = coda.makeObjectSchema({
   ...taskSchemaDefinition, 
   idProperty: "taskId", 
-  id: "taskId", 
   featuredProperties: ["notes", "status", "due"] });
 
 export const tasklistSchema = coda.makeObjectSchema({
@@ -89,5 +51,5 @@ export const tasklistSchema = coda.makeObjectSchema({
     updated: dateSchema,
     // selfLink: UrlSchema,
   },
-  primary: "title"
+  displayProperty: "title"
 });

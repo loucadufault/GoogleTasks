@@ -1,7 +1,6 @@
 import * as coda from "@codahq/packs-sdk";
 
 import 'dotenv/config';
-import { TaskRESTResource } from "./api_response.types";
 
 import { tasklists, tasklist, tasks, task, createTask, updateTask, deleteTask } from "./controller/controller";
 import { syncTableTaskSchema, tasklistSchema, taskSchema } from "./schemas";
@@ -379,6 +378,7 @@ pack.addSyncTable({
   
     execute: async function ([taskList = "primary", dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted = true, showDeleted = false, showHidden = false], context) {
       type TaskDTO = Omit<Task, 'due'> & { due: string }; // override Task due field from Date to string type
+      // DTO in the sense that it is similar to the rest resource (JSON compatible types only) but includes only those props exposed to the top-level
       return {
         result: (
           await tasks([ taskList, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden ], context) // the typing forces us to await here :/
