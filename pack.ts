@@ -35,7 +35,11 @@ const tasklistParam = coda.makeParameter({
   type: coda.ParameterType.String,
   name: "tasklist",
   description: "The URL, ID, or title of a task list to use.",
-  autocomplete: ["My Tasks"]
+  autocomplete: async function (context, search) {
+    const results = await tasklists(context);
+    // Generate an array of autocomplete objects, using the task list's name as the label and its id for the value.
+    return coda.autocompleteSearchObjects(search, results, "title", "id");
+  },
 });
 
 const taskParam = coda.makeParameter({
