@@ -51,11 +51,10 @@ const linkSchema = coda.makeObjectSchema({
 //   },
 // });
 
-
-export const taskSchema = coda.makeObjectSchema({
+const taskSchemaDefinition: coda.ObjectSchemaDefinition<string, string> = {
   type: coda.ValueType.Object,
   properties: {
-    id: { type: coda.ValueType.String },
+    taskId: { type: coda.ValueType.String, fromKey: "id" }, /** @see https://coda.io/packs/build/latest/guides/advanced/schemas/#row-identifier */
     updated: dateSchema,
     // selfLink: UrlSchema,
     completed: dateSchema,
@@ -71,13 +70,21 @@ export const taskSchema = coda.makeObjectSchema({
     deleted: { type: coda.ValueType.Boolean },
     links: { type: coda.ValueType.Array, items: linkSchema }
   },
-  primary: "title"
-});
+  primary: "title" // todo, upgrade sdk and rename to displayProperty
+};
+
+export const taskSchema = coda.makeObjectSchema(taskSchemaDefinition);
+
+export const syncTableTaskSchema = coda.makeObjectSchema({
+  ...taskSchemaDefinition, 
+  idProperty: "taskId", 
+  id: "taskId", 
+  featuredProperties: ["notes", "status", "due"] });
 
 export const tasklistSchema = coda.makeObjectSchema({
   type: coda.ValueType.Object,
   properties: {
-    id: { type: coda.ValueType.String },
+    tasklistId: { type: coda.ValueType.String, fromKey: "id" },
     title: { type: coda.ValueType.String },
     updated: dateSchema,
     // selfLink: UrlSchema,

@@ -4,7 +4,7 @@ import 'dotenv/config';
 import { TaskRESTResource } from "./api_response.types";
 
 import { tasklists, tasklist, tasks, task, createTask, updateTask, deleteTask } from "./controller/controller";
-import { tasklistSchema, taskSchema } from "./schemas";
+import { syncTableTaskSchema, tasklistSchema, taskSchema } from "./schemas";
 import { Task } from "./types";
 import { GOOGLEAPIS_DOMAIN } from "./utils/api.constants";
 import { CACHE_TTL } from "./utils/pack.constants";
@@ -316,7 +316,7 @@ pack.addFormula({
 
 pack.addSyncTable({
   name: "Tasks",
-  schema: taskSchema,
+  schema: syncTableTaskSchema,
   identityName: "Task",
   formula: {
     name: "SyncTasks",
