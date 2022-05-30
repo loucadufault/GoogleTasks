@@ -41,7 +41,7 @@ type TaskRESTResource = {
       description: string,
       link: string
     }
-  ]
+  ] // bug here, this should be an array of objects, not an array with one object TODO
 }
 
 type TasksResponse = BasePaginatableResponse<TaskRESTResource>;

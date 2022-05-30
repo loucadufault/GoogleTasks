@@ -1,9 +1,11 @@
 import * as coda from "@codahq/packs-sdk";
 
 import 'dotenv/config';
+import { TaskRESTResource } from "./api_response.types";
 
 import { tasklists, tasklist, tasks, task, createTask, updateTask, deleteTask } from "./controller/controller";
 import { tasklistSchema, taskSchema } from "./schemas";
+import { Task } from "./types";
 import { GOOGLEAPIS_DOMAIN } from "./utils/api.constants";
 import { CACHE_TTL } from "./utils/pack.constants";
 
@@ -310,4 +312,78 @@ pack.addFormula({
     deleteTask([tasklist, task], context);
     return "OK";
   },
+});
+
+pack.addSyncTable({
+  name: "Tasks",
+  schema: taskSchema,
+  identityName: "Task",
+  formula: {
+    name: "SyncTasks",
+    description: "Sync the user's tasks",
+    cacheTtlSecs: 0, /** @see https://coda.io/packs/build/latest/guides/blocks/sync-tables/#caching */
+    parameters: [
+      tasklistParam,
+      coda.makeParameter({
+        type: coda.ParameterType.Date,
+        name: "dueMin",
+        description: "Lower bound for a task's due date to filter by. The default is not to filter by due date.",
+        optional: true,    
+      }),
+      coda.makeParameter({
+        type: coda.ParameterType.Date,
+        name: "dueMax",
+        description: "Upper bound for a task's due date to filter by. The default is not to filter by due date.",
+        optional: true,    
+      }),
+      coda.makeParameter({
+        type: coda.ParameterType.Date,
+        name: "completedMin",
+        description: "Lower bound for a task's completion date to filter by. The default is not to filter by completion date.",
+        optional: true,    
+      }),
+      coda.makeParameter({
+        type: coda.ParameterType.Date,
+        name: "completedMax",
+        description: "Upper bound for a task's completion date to filter by. The default is not to filter by completion date.",
+        optional: true,    
+      }),
+      coda.makeParameter({
+        type: coda.ParameterType.Date,
+        name: "updatedMin",
+        description: "Lower bound for a task's last modification time to filter by. The default is not to filter by last modification time.",
+        optional: true,    
+      }),
+      coda.makeParameter({
+        type: coda.ParameterType.Boolean,
+        name: "showCompleted",
+        description: "Flag indicating whether completed tasks are returned in the result. The default is True. Note that `showHidden` must also be True to show tasks completed in first party clients, such as the web UI and Google's mobile apps.",
+        optional: true,
+        // defaultValue: true,
+      }),
+      coda.makeParameter({
+        type: coda.ParameterType.Boolean,
+        name: "showDeleted",
+        description: "Flag indicating whether deleted tasks are returned in the result. The default is False.",
+        optional: true,
+        // defaultValue: false,
+      }),
+      coda.makeParameter({
+        type: coda.ParameterType.Boolean,
+        name: "showHidden",
+        description: "Flag indicating whether hidden tasks are returned in the result. The default is False.",
+        optional: true,
+        // defaultValue: false,
+      }),
+    ],
+  
+    execute: async function ([taskList = "primary", dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted = true, showDeleted = false, showHidden = false], context) {
+      type TaskDTO = Omit<Task, 'due'> & { due: string }; // override Task due field from Date to string type
+      return {
+        result: (
+          await tasks([ taskList, dueMin, dueMax, completedMin, completedMax, updatedMin, showCompleted, showDeleted, showHidden ], context) // the typing forces us to await here :/
+          ) as TaskDTO[],
+      };
+    }
+  }
 });
