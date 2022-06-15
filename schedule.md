@@ -27,5 +27,4 @@ stage tbd:
 
 
 random todos
-make tasklist an autocomplete param that pulls from api list of tasklists.name
-make object schemas only the input POJOs, not the result of wrapping with coda utility func. that way they can be manipularted still, and then wrapped in utility func right before usage (e.g. adding featured properties)
+add validation for some params , like status on creaate and  update task see https://coda.io/packs/build/latest/guides/basics/parameters/autocomplete/#validation
