@@ -1,16 +1,17 @@
 import * as coda from "@codahq/packs-sdk";
 
 
-const dateSchema = coda.makeSchema({ type: coda.ValueType.String, codaType: coda.ValueHintType.DateTime });
+// re-using the same schema in composing other schemas seems to introduce bugs, better to hardcode for
+// const dateSchema = coda.makeSchema({ type: coda.ValueType.String, codaType: coda.ValueHintType.DateTime });
 
-const urlSchema = coda.makeSchema({ type: coda.ValueType.String, codaType: coda.ValueHintType.Url });
+// const urlSchema = coda.makeSchema({ type: coda.ValueType.String, codaType: coda.ValueHintType.Url });
 
 const linkSchema = coda.makeObjectSchema({
   type: coda.ValueType.Object,
   properties: {
     type: { type: coda.ValueType.String },
     description: { type: coda.ValueType.String },
-    link: urlSchema
+    link: { type: coda.ValueType.String, codaType: coda.ValueHintType.Url }
   }
 });
 
@@ -18,9 +19,9 @@ const taskSchemaDefinition: coda.ObjectSchemaDefinition<string, string> = {
   type: coda.ValueType.Object,
   properties: {
     taskId: { type: coda.ValueType.String, fromKey: "id" }, /** @see https://coda.io/packs/build/latest/guides/advanced/schemas/#row-identifier */
-    updated: dateSchema,
+    updated: { type: coda.ValueType.String, codaType: coda.ValueHintType.DateTime },
     // selfLink: UrlSchema,
-    completed: dateSchema,
+    completed: { type: coda.ValueType.String, codaType: coda.ValueHintType.DateTime },
     hidden: { type: coda.ValueType.Boolean },
     // stage 3
     // parent: { type: coda.ValueType.String, optional: true },
@@ -29,7 +30,7 @@ const taskSchemaDefinition: coda.ObjectSchemaDefinition<string, string> = {
     title: { type: coda.ValueType.String },
     notes: { type: coda.ValueType.String },
     status: { type: coda.ValueType.String },
-    due: dateSchema,
+    due: { type: coda.ValueType.String, codaType: coda.ValueHintType.DateTime },
     deleted: { type: coda.ValueType.Boolean },
     links: { type: coda.ValueType.Array, items: linkSchema }
   },
@@ -48,7 +49,7 @@ export const tasklistSchema = coda.makeObjectSchema({
   properties: {
     tasklistId: { type: coda.ValueType.String, fromKey: "id" },
     title: { type: coda.ValueType.String },
-    updated: dateSchema,
+    updated: { type: coda.ValueType.String, codaType: coda.ValueHintType.DateTime },
     // selfLink: UrlSchema,
   },
   displayProperty: "title"
